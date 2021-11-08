@@ -284,47 +284,6 @@ public class Cafes   {
      *
      */
     public void cafesPorProveedor(int provid) throws AccesoDatosException {
-        PreparedStatement var2 = null;
-        ResultSet var3 = null;
-
-        try {
-            con = (new Utilidades()).getConnection();
-            var2 = con.prepareStatement("select * from CAFES,PROVEEDORES WHERE CAFES.PROV_ID= ? AND CAFES.PROV_ID=PROVEEDORES.PROV_ID");
-            var2.setInt(1, provid);
-            var3 = var2.executeQuery();
-
-            while(var3.next()) {
-                String var4 = var3.getString("CAF_NOMBRE");
-                int var5 = var3.getInt("PROV_ID");
-                float var6 = var3.getFloat("PRECIO");
-                int var7 = var3.getInt("VENTAS");
-                int var8 = var3.getInt("TOTAL");
-                String var9 = var3.getString("PROV_NOMBRE");
-                String var10 = var3.getString("CALLE");
-                String var11 = var3.getString("CIUDAD");
-                String var12 = var3.getString("PAIS");
-                int var13 = var3.getInt("CP");
-                System.out.println(var4 + ", " + var5 + ", " + var6 + ", " + var7 + ", " + var8 + ",Y el proveedor es:" + var9 + "," + var10 + "," + var11 + "," + var12 + "," + var13);
-            }
-        } catch (IOException var22) {
-            System.err.println(var22.getMessage());
-            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
-        } catch (SQLException var23) {
-            Utilidades.printSQLException(var23);
-            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
-        } finally {
-            try {
-                if (var3 != null) {
-                    var3.close();
-                }
-
-                if (var2 != null) {
-                    var2.close();
-                }
-            } catch (SQLException var21) {
-                Utilidades.printSQLException(var21);
-            }
-
-        }
+        
     }
 }
