@@ -1,5 +1,6 @@
 # Ejercicios JDBC 2.1 de Nikolay Krasenov
 ###***2.f ¿Dónde llamas a cerrar y liberar? ¿Por qué?*** 
+    
     -Cerrar
     Al método cerrar solo lo podemos llamar en el main debido a que si lo
     llamamos en alguno de los métodos de la clase este no se podrá volver
@@ -13,6 +14,7 @@
     los atributos contendrán información del anterior método ejecutado.
 
 ###***2.g Piensa en las ventas e inconvenientes de esta nueva versión de Cafes.java***
+    
     -Ventajas
     La principal ventaja que encuentro en esta nueva versión es que el
     código es mucho más eficiente debido a que nos ahorramos muchas líneas
