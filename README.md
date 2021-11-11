@@ -1,5 +1,5 @@
 # Ejercicios JDBC 2.1 de Nikolay Krasenov
-###***2.f ¿Dónde llamas a cerrar y liberar? ¿Por qué?*** 
+### ***2.f ¿Dónde llamas a cerrar y liberar? ¿Por qué?*** 
     
     -Cerrar
     Al método cerrar solo lo podemos llamar en el main debido a que si lo
@@ -13,7 +13,7 @@
     y después al método insertar, cuando se inicialice el método insertar
     los atributos contendrán información del anterior método ejecutado.
 
-###***2.g Piensa en las ventas e inconvenientes de esta nueva versión de Cafes.java***
+### ***2.g Piensa en las ventas e inconvenientes de esta nueva versión de Cafes.java***
     
     -Ventajas
     La principal ventaja que encuentro en esta nueva versión es que el
