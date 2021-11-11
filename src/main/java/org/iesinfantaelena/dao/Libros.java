@@ -101,8 +101,6 @@ public class Libros {
 
     /**
      * Metodo que muestra por pantalla los datos de la tabla cafes
-     *
-     * @param con
      * @throws SQLException
      */
 
@@ -114,8 +112,6 @@ public class Libros {
 
     /**
      * Actualiza el numero de copias para un libro
-     * @param isbn
-     * @param copias
      * @throws AccesoDatosException
      */
 
@@ -126,12 +122,6 @@ public class Libros {
 
     /**
      * Añade un nuevo libro a la BD
-     * @param isbn
-     * @param titulo
-     * @param autor
-     * @param editorial
-     * @param paginas
-     * @param copias
      * @throws AccesoDatosException
      */
     public void anadirLibro(Libro libro) throws AccesoDatosException {
@@ -141,7 +131,6 @@ public class Libros {
 
     /**
      * Borra un libro por ISBN
-     * @param isbn
      * @throws AccesoDatosException
      */
 
