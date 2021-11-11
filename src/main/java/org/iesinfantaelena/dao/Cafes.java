@@ -21,6 +21,10 @@ import org.iesinfantaelena.modelo.AccesoDatosException;
 public class Cafes   {
 
     private static Connection con;
+    private static ResultSet rs;
+    private static PreparedStatement pStmt;
+    private static Statement stmt;
+
     // Consultas a realizar en BD
     private static final String SELECT_CAFES_QUERY = "select CAF_NOMBRE, PROV_ID, PRECIO, VENTAS, TOTAL from CAFES";
     private static final String SEARCH_CAFE_QUERY = "select * from CAFES WHERE CAF_NOMBRE= ?";
@@ -39,8 +43,19 @@ public class Cafes   {
      */
 
     public Cafes() {
+        /**
+         * Los siguientes atributos los he comentado debido a que me parecia más eficiente llamar directamente
+         * al método liberar, pero solo los he comentado dbeido a que en uno de los ejercios pedías que lo
+         * hiciesemos de esta forma
+         */
+        con = null;
+        liberar();
+        /*
+        rs = null;
+        pStmt = null;
+        stmt = null;
 
-        Statement stmt = null;
+         */
 
         try {
             con = new Utilidades().getConnection();
@@ -66,16 +81,7 @@ public class Cafes   {
 
 
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
         }
     }
 
@@ -85,11 +91,6 @@ public class Cafes   {
      * @throws SQLException
      */
     public void verTabla() throws AccesoDatosException {
-
-        /* Sentencia sql */
-        Statement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
         try {
             // Creación de la sentencia
             stmt = con.createStatement();
@@ -116,19 +117,7 @@ public class Cafes   {
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
         }
 
     }
@@ -139,18 +128,13 @@ public class Cafes   {
      * @param nombre
      */
     public void buscar(String nombre) throws AccesoDatosException {
-
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
         try {
             // Creación de la sentencia
-            stmt = con.prepareStatement(SEARCH_CAFE_QUERY);
-            stmt.setString(1, nombre);
+            pStmt = con.prepareStatement(SEARCH_CAFE_QUERY);
+            pStmt.setString(1, nombre);
             // Ejecución de la consulta y obtención de resultados en un
             // ResultSet
-            rs = stmt.executeQuery();
+            rs = pStmt.executeQuery();
 
             // Recuperación de los datos del ResultSet
             if (rs.next()) {
@@ -170,19 +154,7 @@ public class Cafes   {
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
         }
 
     }
@@ -200,19 +172,16 @@ public class Cafes   {
     public void insertar(String nombre, int provid, float precio, int ventas,
                          int total) throws AccesoDatosException {
 
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-
         try {
 
-            stmt = con.prepareStatement(INSERT_CAFE_QUERY);
-            stmt.setString(1, nombre);
-            stmt.setInt(2, provid);
-            stmt.setFloat(3, precio);
-            stmt.setInt(4, ventas);
-            stmt.setInt(5, total);
+            pStmt = con.prepareStatement(INSERT_CAFE_QUERY);
+            pStmt.setString(1, nombre);
+            pStmt.setInt(2, provid);
+            pStmt.setFloat(3, precio);
+            pStmt.setInt(4, ventas);
+            pStmt.setInt(5, total);
             // Ejecución de la inserción
-            stmt.executeUpdate();
+            pStmt.executeUpdate();
 
 
         } catch (SQLException sqle) {
@@ -222,17 +191,7 @@ public class Cafes   {
                     "Ocurrió un error al acceder a los datos");
 
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
         }
 
     }
@@ -245,15 +204,12 @@ public class Cafes   {
      */
     public void borrar(String nombre) throws AccesoDatosException {
 
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-
         try {
             // Creación de la sentencia
-            stmt = con.prepareStatement(DELETE_CAFE_QUERY);
-            stmt.setString(1, nombre);
+            pStmt = con.prepareStatement(DELETE_CAFE_QUERY);
+            pStmt.setString(1, nombre);
             // Ejecución del borrado
-            stmt.executeUpdate();
+            pStmt.executeUpdate();
             System.out.println("café "+nombre+ " ha sido borrado.");
 
         } catch (SQLException sqle) {
@@ -263,18 +219,7 @@ public class Cafes   {
                     "Ocurrió un error al acceder a los datos");
 
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
-
+            liberar();
         }
 
     }
@@ -285,5 +230,46 @@ public class Cafes   {
      */
     public void cafesPorProveedor(int provid) throws AccesoDatosException {
         
+    }
+
+    /**
+     * Método para cerrar la conexión
+     *
+     * @throws AccesoDatosException
+     */
+    public void cerrar() {
+
+        if (con != null) {
+            Utilidades.closeConnection(con);
+        }
+
+    }
+
+    /**
+     * Método para liberar recursos
+     *
+     * @throws AccesoDatosException
+     */
+    private void liberar() {
+        try {
+            // Liberamos todos los recursos pase lo que pase
+            //Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
+            if (rs != null) {
+                rs.close();
+                rs = null;
+            }
+            if (stmt != null) {
+                stmt.close();
+                stmt = null;
+            }
+            if (pStmt != null) {
+                pStmt.close();
+                pStmt = null;
+            }
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log, no delego porque
+            // es error al liberar recursos
+            Utilidades.printSQLException(sqle);
+        }
     }
 }
