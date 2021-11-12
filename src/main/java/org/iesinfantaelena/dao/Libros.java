@@ -31,6 +31,8 @@ public class Libros {
     private ResultSet rs;
     private PreparedStatement pstmt;
 
+    private static final String CREATE_LIBROS_QUERTY = "create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
+
     /**
      * Constructor: inicializa conexión
      *
@@ -101,8 +103,6 @@ public class Libros {
 
     /**
      * Metodo que muestra por pantalla los datos de la tabla cafes
-     *
-     * @param con
      * @throws SQLException
      */
 
@@ -114,8 +114,6 @@ public class Libros {
 
     /**
      * Actualiza el numero de copias para un libro
-     * @param isbn
-     * @param copias
      * @throws AccesoDatosException
      */
 
@@ -126,12 +124,6 @@ public class Libros {
 
     /**
      * Añade un nuevo libro a la BD
-     * @param isbn
-     * @param titulo
-     * @param autor
-     * @param editorial
-     * @param paginas
-     * @param copias
      * @throws AccesoDatosException
      */
     public void anadirLibro(Libro libro) throws AccesoDatosException {
@@ -141,7 +133,6 @@ public class Libros {
 
     /**
      * Borra un libro por ISBN
-     * @param isbn
      * @throws AccesoDatosException
      */
 
@@ -166,7 +157,32 @@ public class Libros {
 
     }
 
+    public void crearTablaLibros() throws AccesoDatosException{
+        PreparedStatement stmt = null;
 
+        try {
+            stmt = con.prepareStatement(CREATE_LIBROS_QUERTY);
+            stmt.executeUpdate();
 
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
 
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+
+        }
+    }
 }
