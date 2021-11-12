@@ -31,6 +31,8 @@ public class Libros {
     private ResultSet rs;
     private PreparedStatement pstmt;
 
+    private static final String INSERT_LIBRERIA_QUERY = "insert into LIBROS values (?,?,?,?,?,?)";
+
     /**
      * Constructor: inicializa conexión
      *
@@ -102,7 +104,6 @@ public class Libros {
     /**
      * Metodo que muestra por pantalla los datos de la tabla cafes
      *
-     * @param con
      * @throws SQLException
      */
 
@@ -114,8 +115,6 @@ public class Libros {
 
     /**
      * Actualiza el numero de copias para un libro
-     * @param isbn
-     * @param copias
      * @throws AccesoDatosException
      */
 
@@ -126,22 +125,47 @@ public class Libros {
 
     /**
      * Añade un nuevo libro a la BD
-     * @param isbn
-     * @param titulo
-     * @param autor
-     * @param editorial
-     * @param paginas
-     * @param copias
      * @throws AccesoDatosException
      */
     public void anadirLibro(Libro libro) throws AccesoDatosException {
+        PreparedStatement stmt = null;
+
+        try {
+
+            stmt = con.prepareStatement(INSERT_LIBRERIA_QUERY);
+            stmt.setInt(1, libro.getISBN());
+            stmt.setString(2, libro.getTitulo());
+            stmt.setString(3, libro.getAutor());
+            stmt.setString(4, libro.getEditorial());
+            stmt.setInt(5, libro.getPaginas());
+            stmt.setInt(6, libro.getCopias());
+            // Ejecución de la inserción
+            stmt.executeUpdate();
 
 
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
     }
 
     /**
      * Borra un libro por ISBN
-     * @param isbn
      * @throws AccesoDatosException
      */
 
