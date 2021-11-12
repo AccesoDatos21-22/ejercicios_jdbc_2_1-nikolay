@@ -109,7 +109,6 @@ public class Utilidades {
                     connectionProps);
 
         } else if (this.dbms.equals("sqlite")) {
-            System.out.println("Hola");
             conn = DriverManager
                     .getConnection("jdbc:" + this.dbms + ":");
         } else if (this.dbms.equals("h2")) {

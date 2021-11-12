@@ -8,7 +8,7 @@
     -Liberar
     Al método liberar() lo llamo en el bloque finally de todos los métodos 
     debido a que los atributos a los cuales voy a liberar estan declarados
-    en al principio de la clase, por lo cual si llamo al método borrar
+    al principio de la clase, por lo cual si llamo al método borrar
     y después al método insertar, cuando se inicialice el método insertar
     los atributos contendrán información del anterior método ejecutado.
 
@@ -33,4 +33,9 @@
     - Editorial
     - Páginas
     - Copias
+
+### ***Adicional***
+    En la clase Libros.java aunque no lo mencionases la he optimizado para
+    que hago use el método liberar en todos los bloques finally de los métodos
+    de dicha clase.
     

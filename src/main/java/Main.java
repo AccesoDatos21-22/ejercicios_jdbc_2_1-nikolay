@@ -3,7 +3,28 @@ import org.iesinfantaelena.dao.Libros;
 import org.iesinfantaelena.modelo.AccesoDatosException;
 import org.iesinfantaelena.modelo.Libro;
 
+import java.util.List;
+
 public class Main {
+
+    public static void leerLista(List<Libro> lista){
+        for(int i = 0; i < lista.size(); i++){
+            int isbn = lista.get(i).getISBN();
+            String titulo = lista.get(i).getTitulo();
+            String autor = lista.get(i).getAutor();
+            String editorial = lista.get(i).getEditorial();
+            int paginas = lista.get(i).getPaginas();
+            int copias = lista.get(i).getCopias();
+
+            System.out.println(isbn + ", " + titulo + ", " + autor + ", " + editorial + ", " + paginas + ", " + copias);
+        }
+    }
+
+    public static void leerCampos(String[] campos){
+        for(int i = 0; i < campos.length; i++){
+            System.out.println(campos[i]);
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -18,8 +39,12 @@ public class Main {
             cafes.borrar("Cafe tacilla");
             cafes.verTabla();
 
-            Libros libros = new Libros();
+            System.out.println();
 
+            Libros libros = new Libros();
+            libros.crearTablaLibros();
+
+            System.out.println("Añado los libros en la base de datos \n");
             Libro libro_1 = new Libro(12345,"Sistemas Operativos","Tanembaun","Informatica",156,3);
             Libro libro_2 = new Libro(12453,"Minix","Stallings","Informatica",345,4);
             Libro libro_3 = new Libro(1325,"Linux","Richard Stallman","FSF",168,10);
@@ -29,6 +54,35 @@ public class Main {
             libros.anadirLibro(libro_2);
             libros.anadirLibro(libro_3);
             libros.anadirLibro(libro_4);
+
+            System.out.println("Borro el primer libro");
+            libros.borrar(libro_1);
+
+            System.out.println();
+
+            System.out.println("Catálogo de libros disponibles");
+            leerLista(libros.verCatalogo());
+
+            System.out.println();
+
+            System.out.println("Obtengo el libro con el isbn = 1325");
+            libros.obtenerLibro(1325);
+
+            System.out.println();
+
+            System.out.println("Obtengo los nombres de los campos de la base de datos");
+            leerCampos(libros.getCamposLibro());
+
+            System.out.println();
+
+            System.out.println("Actualizo las copias del libro_2");
+            libro_2 = new Libro(12453,"Minix","Stallings","Informatica",345,10);
+            libros.actualizarCopias(libro_2);
+
+            System.out.println();
+
+            System.out.println("Catálogo de libros disponibles");
+            leerLista(libros.verCatalogo());
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();

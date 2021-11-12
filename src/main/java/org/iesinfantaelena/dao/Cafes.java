@@ -20,41 +20,40 @@ import org.iesinfantaelena.modelo.AccesoDatosException;
 
 public class Cafes   {
 
+    /**
+     * Definición de atributos para que la clase sea más eficiente
+     */
     private static Connection con;
     private static ResultSet rs;
     private static PreparedStatement pStmt;
     private static Statement stmt;
 
-    // Consultas a realizar en BD
+    /**
+     * Consultas a realizar en la base de datos
+     */
     private static final String SELECT_CAFES_QUERY = "select CAF_NOMBRE, PROV_ID, PRECIO, VENTAS, TOTAL from CAFES";
     private static final String SEARCH_CAFE_QUERY = "select * from CAFES WHERE CAF_NOMBRE= ?";
     private static final String INSERT_CAFE_QUERY = "insert into CAFES values (?,?,?,?,?)";
     private static final String DELETE_CAFE_QUERY = "delete from CAFES WHERE CAF_NOMBRE = ?";
     private static final String SEARCH_CAFES_PROVEEDOR = "select * from CAFES,PROVEEDORES WHERE CAFES.PROV_ID= ? AND CAFES.PROV_ID=PROVEEDORES.PROV_ID";
-
     private static final String CREATE_TABLE_PROVEEDORES ="create table if not exists proveedores (PROV_ID integer NOT NULL, PROV_NOMBRE varchar(40) NOT NULL, CALLE varchar(40) NOT NULL, CIUDAD varchar(20) NOT NULL, PAIS varchar(2) NOT NULL, CP varchar(5), PRIMARY KEY (PROV_ID));";
-
     private static final String CREATE_TABLE_CAFES ="create table if not exists CAFES (CAF_NOMBRE varchar(32) NOT NULL, PROV_ID int NOT NULL, PRECIO numeric(10,2) NOT NULL, VENTAS integer NOT NULL, TOTAL integer NOT NULL, PRIMARY KEY (CAF_NOMBRE), FOREIGN KEY (PROV_ID) REFERENCES PROVEEDORES(PROV_ID));";
 
     /**
      * Constructor: inicializa conexión
-     *
-     * @throws AccesoDatosException
      */
-
     public Cafes() {
         /**
          * Los siguientes atributos los he comentado debido a que me parecia más eficiente llamar directamente
-         * al método liberar, pero solo los he comentado dbeido a que en uno de los ejercios pedías que lo
-         * hiciesemos de esta forma
+         * al método liberar (en el bloque finally), pero solo los he comentado debido a que en uno de los ejercicios pedías que lo
+         * hiciésemos de esta forma
          */
         con = null;
-        liberar();
+
         /*
         rs = null;
         pStmt = null;
         stmt = null;
-
          */
 
         try {
@@ -62,43 +61,29 @@ public class Cafes   {
             stmt = con.createStatement();
 
             stmt.executeUpdate(CREATE_TABLE_PROVEEDORES);
-
             stmt.executeUpdate(CREATE_TABLE_CAFES);
 
             stmt.executeUpdate("insert into proveedores values(49, 'PROVerior Coffee', '1 Party Place', 'Mendocino', 'CA', '95460');");
             stmt.executeUpdate("insert into proveedores values(101, 'Acme, Inc.', '99 mercado CALLE', 'Groundsville', 'CA', '95199');");
             stmt.executeUpdate("insert into proveedores values(150, 'The High Ground', '100 Coffee Lane', 'Meadows', 'CA', '93966');");
-
         } catch (IOException e) {
-            // Error al leer propiedades
-            // En una aplicación real, escribo en el log y delego
             System.err.println(e.getMessage());
 
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
-            //Utilidades.printSQLException(sqle);
             System.out.println(sqle.getMessage());
-
-
         } finally {
             liberar();
         }
     }
 
     /**
-     * Metodo que muestra por pantalla los datos de la tabla cafes
-     *
-     * @throws SQLException
+     * Método que muestra por pantalla los datos de la tabla cafes
      */
     public void verTabla() throws AccesoDatosException {
         try {
-            // Creación de la sentencia
             stmt = con.createStatement();
-            // Ejecución de la consulta y obtención de resultados en un
-            // ResultSet
             rs = stmt.executeQuery(SELECT_CAFES_QUERY);
 
-            // Recuperación de los datos del ResultSet
             while (rs.next()) {
                 String coffeeName = rs.getString("CAF_NOMBRE");
                 int supplierID = rs.getInt("PROV_ID");
@@ -108,11 +93,7 @@ public class Cafes   {
                 System.out.println(coffeeName + ", " + supplierID + ", "
                         + PRECIO + ", " + VENTAS + ", " + total);
             }
-
-
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
-            // System.err.println(sqle.getMessage());
             Utilidades.printSQLException(sqle);
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
@@ -123,20 +104,15 @@ public class Cafes   {
     }
 
     /**
-     * Mótodo que busca un cafe por nombre y muestra sus datos
-     *
-     * @param nombre
+     * Método que busca un cafe por nombre y muestra sus datos
      */
     public void buscar(String nombre) throws AccesoDatosException {
         try {
-            // Creación de la sentencia
             pStmt = con.prepareStatement(SEARCH_CAFE_QUERY);
             pStmt.setString(1, nombre);
-            // Ejecución de la consulta y obtención de resultados en un
-            // ResultSet
+
             rs = pStmt.executeQuery();
 
-            // Recuperación de los datos del ResultSet
             if (rs.next()) {
                 String coffeeName = rs.getString("CAF_NOMBRE");
                 int supplierID = rs.getInt("PROV_ID");
@@ -147,9 +123,7 @@ public class Cafes   {
                         + PRECIO + ", " + VENTAS + ", " + total);
             }
 
-
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
@@ -161,63 +135,43 @@ public class Cafes   {
 
     /**
      * Mótodo para insertar una fila
-     *
-     * @param nombre
-     * @param provid
-     * @param precio
-     * @param ventas
-     * @param total
-     * @return
      */
     public void insertar(String nombre, int provid, float precio, int ventas,
                          int total) throws AccesoDatosException {
 
         try {
-
             pStmt = con.prepareStatement(INSERT_CAFE_QUERY);
+
             pStmt.setString(1, nombre);
             pStmt.setInt(2, provid);
             pStmt.setFloat(3, precio);
             pStmt.setInt(4, ventas);
             pStmt.setInt(5, total);
-            // Ejecución de la inserción
+
             pStmt.executeUpdate();
-
-
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
-
         } finally {
             liberar();
         }
-
     }
 
     /**
-     * Mótodo para borrar una fila dado un nombre de cafó
-     *
-     * @param nombre
-     * @return
+     * Método para borrar una fila dado un nombre de café
      */
     public void borrar(String nombre) throws AccesoDatosException {
-
         try {
-            // Creación de la sentencia
             pStmt = con.prepareStatement(DELETE_CAFE_QUERY);
             pStmt.setString(1, nombre);
-            // Ejecución del borrado
             pStmt.executeUpdate();
-            System.out.println("café "+nombre+ " ha sido borrado.");
 
+            System.out.println("El café " + nombre + " ha sido borrado.");
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
             throw new AccesoDatosException(
                     "Ocurrió un error al acceder a los datos");
-
         } finally {
             liberar();
         }
@@ -225,76 +179,63 @@ public class Cafes   {
     }
 
     /**
-     * Mótodo que busca un cafe por nombre y muestra sus datos
-     *
+     * Método al que se le pasa el id del proveedor y busca los productos
+     * que son suyos
      */
     public void cafesPorProveedor(int provid) throws AccesoDatosException {
-        PreparedStatement var2 = null;
-        ResultSet var3 = null;
+        pStmt = null;
+        rs = null;
 
         try {
-            con = (new Utilidades()).getConnection();
-            var2 = con.prepareStatement("select * from CAFES,PROVEEDORES WHERE CAFES.PROV_ID= ? AND CAFES.PROV_ID=PROVEEDORES.PROV_ID");
-            var2.setInt(1, provid);
-            var3 = var2.executeQuery();
+            pStmt = con.prepareStatement(SEARCH_CAFES_PROVEEDOR);
+            pStmt.setInt(1, provid);
+            rs = pStmt.executeQuery();
 
-            while(var3.next()) {
-                String var4 = var3.getString("CAF_NOMBRE");
-                int var5 = var3.getInt("PROV_ID");
-                float var6 = var3.getFloat("PRECIO");
-                int var7 = var3.getInt("VENTAS");
-                int var8 = var3.getInt("TOTAL");
-                String var9 = var3.getString("PROV_NOMBRE");
-                String var10 = var3.getString("CALLE");
-                String var11 = var3.getString("CIUDAD");
-                String var12 = var3.getString("PAIS");
-                int var13 = var3.getInt("CP");
+            while(rs.next()) {
+                String var4 = rs.getString("CAF_NOMBRE");
+                int var5 = rs.getInt("PROV_ID");
+                float var6 = rs.getFloat("PRECIO");
+                int var7 = rs.getInt("VENTAS");
+                int var8 = rs.getInt("TOTAL");
+                String var9 = rs.getString("PROV_NOMBRE");
+                String var10 = rs.getString("CALLE");
+                String var11 = rs.getString("CIUDAD");
+                String var12 = rs.getString("PAIS");
+                int var13 = rs.getInt("CP");
                 System.out.println(var4 + ", " + var5 + ", " + var6 + ", " + var7 + ", " + var8 + ",Y el proveedor es:" + var9 + "," + var10 + "," + var11 + "," + var12 + "," + var13);
             }
-        } catch (IOException var22) {
-            System.err.println(var22.getMessage());
-            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } catch (SQLException var23) {
             Utilidades.printSQLException(var23);
             throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } finally {
             try {
-                if (var3 != null) {
-                    var3.close();
+                if (rs != null) {
+                    rs.close();
                 }
 
-                if (var2 != null) {
-                    var2.close();
+                if (pStmt != null) {
+                    pStmt.close();
                 }
             } catch (SQLException var21) {
                 Utilidades.printSQLException(var21);
             }
-
         }
     }
 
     /**
-     * Método para cerrar la conexión
-     *
-     * @throws AccesoDatosException
+     * Método para cerrar la conexión hacia la base de datos
      */
     public void cerrar() {
-
         if (con != null) {
             Utilidades.closeConnection(con);
         }
-
     }
 
     /**
-     * Método para liberar recursos
-     *
-     * @throws AccesoDatosException
+     * Método para liberar recursos utilizados
      */
     private void liberar() {
         try {
-            // Liberamos todos los recursos pase lo que pase
-            //Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
             if (rs != null) {
                 rs.close();
                 rs = null;
@@ -308,8 +249,6 @@ public class Cafes   {
                 pStmt = null;
             }
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log, no delego porque
-            // es error al liberar recursos
             Utilidades.printSQLException(sqle);
         }
     }
