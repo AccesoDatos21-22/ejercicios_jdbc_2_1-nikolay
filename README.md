@@ -1,4 +1,4 @@
-# Ejercicios JDBC 2.1 de Nikolay Krasenov
+# Ejercicios JDBC 2.1 de Nikolay Krasenov 💻☕
 ###***2.f ¿Dónde llamas a cerrar y liberar? ¿Por qué?*** 
     -Cerrar
     Al método cerrar solo lo podemos llamar en el main debido a que si lo
