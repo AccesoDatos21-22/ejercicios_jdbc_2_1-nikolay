@@ -17,8 +17,6 @@ public class Main {
             cafes.borrar("Cafe tacilla");
             cafes.verTabla();
 
-
-
         } catch (AccesoDatosException e) {
             e.printStackTrace();
         }
