@@ -28,12 +28,13 @@ public class Libros {
     private PreparedStatement pstmt;
 
 
-    private static final String CREATE_LIBROS_QUERTY = "create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
+    private static final String CREATE_LIBROS_QUERY = "create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
     private static final String INSERT_LIBRERIA_QUERY = "insert into LIBROS values (?,?,?,?,?,?)";
     private static final String SELECT_LIBROS_QUERY = "select isbn, titulo, autor, editorial, paginas, copias from libros";
     private static final String DELETE_LIBRO_QUERY = "delete from LIBROS WHERE isbn = ?";
     private static final String SEARCH_LIBRO_QUERY = "select * from libros WHERE isbn = ?";
     private static final String UPDATE_LIBRO_QUERY = "update libros from set isbn = ?, titulo = ?, autor = ?, editorial = ?, paginas = ?, copias = ?";
+    private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
 
     /**
      * Constructor: inicializa conexión
@@ -105,6 +106,7 @@ public class Libros {
 
     /**
      * Metodo que muestra por pantalla los datos de la tabla cafes
+     *
      * @throws SQLException
      */
 
@@ -149,6 +151,7 @@ public class Libros {
 
     /**
      * Actualiza el numero de copias para un libro
+     *
      * @throws AccesoDatosException
      */
 
@@ -197,6 +200,7 @@ public class Libros {
 
     /**
      * Añade un nuevo libro a la BD
+     *
      * @throws AccesoDatosException
      */
     public void anadirLibro(Libro libro) throws AccesoDatosException {
@@ -238,6 +242,7 @@ public class Libros {
 
     /**
      * Borra un libro por ISBN
+     *
      * @throws AccesoDatosException
      */
 
@@ -276,61 +281,11 @@ public class Libros {
 
     }
 
-    /**
-     * Devulve los nombres de los campos de BD
-     * @return
-     * @throws AccesoDatosException
-     */
-
-    public String[] getCamposLibro() throws AccesoDatosException {
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
-
-        String[] columnas = null;
-
-        try {
-            DatabaseMetaData dbmd = con.getMetaData();
-            rs = dbmd.getColumns(null, null,null,null);
-
-            // Recuperación de los datos del ResultSet
-            int cont = 0;
-
-            while (rs.next()) {
-                String nombre = rs.getString("COLUMN_NAME");
-                columnas[cont] = nombre;
-                cont++;
-            }
-
-        } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
-            Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
-        } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
-        }
-        return columnas;
-    }
-
     public void crearTablaLibros() throws AccesoDatosException {
         PreparedStatement stmt = null;
 
         try {
-            stmt = con.prepareStatement(CREATE_LIBROS_QUERTY);
+            stmt = con.prepareStatement(CREATE_LIBROS_QUERY);
             stmt.executeUpdate();
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
@@ -353,7 +308,7 @@ public class Libros {
         }
     }
 
-    public void obtenerLibro ( int ISBN) throws AccesoDatosException {
+    public void obtenerLibro(int ISBN) throws AccesoDatosException {
         /* Sentencia sql */
         PreparedStatement stmt = null;
         /* Conjunto de Resultados a obtener de la sentencia sql */
@@ -399,4 +354,41 @@ public class Libros {
             }
         }
     }
+
+    public String[] getCamposLibro() throws AccesoDatosException {
+
+        /*Sentencia sql con parámetros de entrada*/
+        pstmt = null;
+        /*Conjunto de Resultados a obtener de la sentencia sql*/
+        rs = null;
+        ResultSetMetaData rsmd = null;
+        String[] campos = null;
+        try {
+            //Solicitamos a la conexion un objeto stmt para nuestra consulta
+            pstmt = con.prepareStatement(SELECT_CAMPOS_QUERY);
+
+            //Le solicitamos al objeto stmt que ejecute nuestra consulta
+            //y nos devuelve los resultados en un objeto ResultSet
+            rs = pstmt.executeQuery();
+            rsmd = rs.getMetaData();
+            int columns = rsmd.getColumnCount();
+            campos = new String[columns];
+            for (int i = 0; i < columns; i++) {
+                //Los indices de las columnas comienzan en 1
+                campos[i] = rsmd.getColumnLabel(i + 1);
+            }
+            return campos;
+
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+
+        } finally {
+            liberar();
+        }
+    }
 }
+
